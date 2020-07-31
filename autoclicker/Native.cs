@@ -85,6 +85,32 @@ static class Native
         SCANCODE = 8,
     }
 
+    public enum SCANCODE_FR : ushort
+    {
+        A = 16,
+        Z = 17,
+        E = 18,
+        R = 19,
+        T = 20,
+        Y = 21,
+        U = 22,
+        I = 23,
+        O = 24,
+        P = 25,
+        Q = 30,
+        S = 31,
+        D = 32,
+        F = 33,
+        G = 34,
+        H = 35,
+        J = 36,
+        K = 37,
+        L = 38,
+        M = 39,
+        W = 44,
+        X = 45,
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct MOUSEINPUT
     {
@@ -100,7 +126,7 @@ static class Native
     public struct KEYBDINPUT
     {
         public short wVK;           // 0
-        public ushort wScan;        // 2
+        public SCANCODE_FR wScan;   // 2
         public KEYEVENTF dwFlags;   // 4
         public uint time;           // 8
         public IntPtr dwExtraInfo;  // 12
@@ -126,5 +152,23 @@ static class Native
     [DllImport("user32.dll")]
     public static extern IntPtr GetMessageExtraInfo();
 
+
+    [Flags]
+    public enum HOTKEY_MOD : int
+    {
+        ALT = 1,
+        CONTROL = 2,
+        SHIFT = 4,
+        WIN = 8,
+        NOREPEAT = 0x4000,
+    }
+
+    [DllImport("user32.dll")]
+    public static extern bool RegisterHotKey(IntPtr hWnd, int id, HOTKEY_MOD fsModifiers, int vk);
+
+    [DllImport("user32.dll")]
+    public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+    //SetWindowsHookEx
 
 }

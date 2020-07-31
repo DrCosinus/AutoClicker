@@ -9,12 +9,13 @@ using System.Runtime.InteropServices;
 using System.Windows.Input;
 
 using INPUT = Native.INPUT;
-using POINT = Native.POINT;
 using KEYBDINPUT = Native.KEYBDINPUT;
 using MOUSEINPUT = Native.MOUSEINPUT;
 using INPUT_TYPE = Native.INPUT_TYPE;
 using KEYEVENTF = Native.KEYEVENTF;
 using MOUSEEVENTF = Native.MOUSEEVENTF;
+using SCANCODE = Native.SCANCODE_FR;
+using System.Linq;
 
 namespace autoclicker
 {
@@ -29,7 +30,7 @@ namespace autoclicker
             InitializeComponent();
             this.Text = $"{ title } - { (Environment.Is64BitProcess ? "64bit" : "32bit") }";
 
-            ghk = new KeyHandler(Keys.F11, this);
+            ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
             System.Diagnostics.Debug.WriteLine($"{Marshal.SizeOf(typeof(INPUT)) } / {Marshal.SizeOf(typeof(KEYBDINPUT))} / {Marshal.SizeOf(typeof(MOUSEINPUT))}");
         }
@@ -59,46 +60,68 @@ namespace autoclicker
             ToggleClickTimer();
         }
 
-        private void sendKey(short c)
+        private void sendKey(IList<INPUT> inputs, SCANCODE scanCode)
         {
-            INPUT[] inputs = new INPUT[2];
-
-            inputs[0].type = INPUT_TYPE.KEYBOARD;
-            inputs[0].ki.wVK = c;
-            inputs[0].ki.wScan = 0;
-            inputs[0].ki.dwFlags = 0;
-            inputs[0].ki.dwExtraInfo = IntPtr.Zero;
-            inputs[0].ki.time = 0;
-
-            inputs[1].type = INPUT_TYPE.KEYBOARD;
-            inputs[1].ki.wVK = c;
-            inputs[1].ki.wScan = 0;
-            inputs[1].ki.dwFlags = KEYEVENTF.KEYUP;
-            inputs[1].ki.dwExtraInfo = IntPtr.Zero;
-            inputs[1].ki.time = 0;
-
-            if (Native.SendInput(2, inputs, Marshal.SizeOf(typeof(INPUT))) == 0)
+            //INPUT[] inputs = new INPUT[2];
             {
-                System.Diagnostics.Debug.WriteLine($"SendInput failed with code: { Marshal.GetLastWin32Error() }");
+                var input = new INPUT();
+
+                input.type = INPUT_TYPE.KEYBOARD;
+                input.ki.wVK = 0;
+                input.ki.wScan = scanCode;
+                input.ki.dwFlags = KEYEVENTF.SCANCODE;
+                input.ki.dwExtraInfo = IntPtr.Zero;
+                input.ki.time = 0;
+
+                inputs.Add(input);
             }
+
+            {
+                var input = new INPUT();
+
+                input.type = INPUT_TYPE.KEYBOARD;
+                input.ki.wVK = 0;
+                input.ki.wScan = scanCode;
+                input.ki.dwFlags = KEYEVENTF.KEYUP | KEYEVENTF.SCANCODE;
+                input.ki.dwExtraInfo = IntPtr.Zero;
+                input.ki.time = 0;
+
+                inputs.Add(input);
+            }
+
         }
 
-        private void sendMouse(MOUSEEVENTF flags)
+        private void sendMouse(IList<INPUT> inputs, MOUSEEVENTF flags)
         {
-            INPUT[] input = new INPUT[1];
+            var input = new INPUT();
 
-            input[0].type = INPUT_TYPE.MOUSE;
-            input[0].mi.dx = 0;
-            input[0].mi.dy = 0;
-            input[0].mi.dwFlags = flags;
-            input[0].mi.dwExtraInfo = IntPtr.Zero;
-            input[0].mi.mouseData = 0;
-            input[0].mi.time = 0;
+            input.type = INPUT_TYPE.MOUSE;
+            input.mi.dx = 0;
+            input.mi.dy = 0;
+            input.mi.dwFlags = flags;
+            input.mi.dwExtraInfo = IntPtr.Zero;
+            input.mi.mouseData = 0;
+            input.mi.time = 0;
 
-            if (Native.SendInput(1, input, Marshal.SizeOf(typeof(INPUT))) == 0)
-            {
-                System.Diagnostics.Debug.WriteLine($"SendInput failed with code: { Marshal.GetLastWin32Error() }");
-            }
+            inputs.Add(input);
+            //if (Native.SendInput(1, input, Marshal.SizeOf(typeof(INPUT))) == 0)
+            //{
+            //    System.Diagnostics.Debug.WriteLine($"SendInput failed with code: { Marshal.GetLastWin32Error() }");
+            //}
+        }
+
+        private bool clickOn = false;
+
+        MouseButtons previousMouseButtons = MouseButtons.None;
+
+        bool CheckMouseButtonJustPressed(MouseButtons button)
+        {
+            return !previousMouseButtons.HasFlag(button) & MouseButtons.HasFlag(button);
+        }
+
+        bool CheckMouseButtonDown(MouseButtons button)
+        {
+            return MouseButtons.HasFlag(button);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -108,13 +131,29 @@ namespace autoclicker
                 ToggleClickTimer();
                 return;
             }
-            sendKey((short)'J');
-            //System.Diagnostics.Debug.WriteLine($"{ MouseButtons }");
 
-            //if (Control.MouseButtons == MouseButtons.XButton1)
+            List<INPUT> inputs = new List<INPUT>();
+
+            sendKey(inputs, SCANCODE.L);
+            sendKey(inputs, SCANCODE.K);
+            sendKey(inputs, SCANCODE.M);
+
+            if (CheckMouseButtonJustPressed(MouseButtons.XButton2))
             {
-                sendMouse(MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.LEFTUP | MOUSEEVENTF.RIGHTDOWN | MOUSEEVENTF.RIGHTUP | MOUSEEVENTF.MIDDLEDOWN | MOUSEEVENTF.MIDDLEUP);
+                clickOn = !clickOn;
             }
+
+            if (clickOn | CheckMouseButtonDown(MouseButtons.XButton1))
+            {
+                sendMouse(inputs, MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.LEFTUP | MOUSEEVENTF.RIGHTDOWN | MOUSEEVENTF.RIGHTUP | MOUSEEVENTF.MIDDLEDOWN | MOUSEEVENTF.MIDDLEUP);
+            }
+
+            if (Native.SendInput(inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT))) == 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"SendInput failed with code: { Marshal.GetLastWin32Error() }");
+            }
+
+            previousMouseButtons = MouseButtons;
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -133,7 +172,7 @@ namespace autoclicker
                 this.Text = $"{ title } - running... \"{ GetWindowName(startWindow) }\"";
                 btnStart.Text = "Stop";
                 numericUpDown1.Enabled = false;
-                
+
             }
             else
             {

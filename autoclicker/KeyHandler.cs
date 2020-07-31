@@ -5,16 +5,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
+using HOTKEY_MOD = Native.HOTKEY_MOD;
+
 namespace autoclicker
 {
     public class KeyHandler
     {
-        [DllImport("user32.dll")]
-        private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
-
-        [DllImport("user32.dll")]
-        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-
         private int key;
         private IntPtr hWnd;
         private int id;
@@ -33,12 +29,12 @@ namespace autoclicker
 
         public bool Register()
         {
-            return RegisterHotKey(hWnd, id, 0, key);
+            return Native.RegisterHotKey(hWnd, id, 0, key);
         }
 
         public bool Unregister()
         {
-            return UnregisterHotKey(hWnd, id);
+            return Native.UnregisterHotKey(hWnd, id);
         }
     }
 }
