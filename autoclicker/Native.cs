@@ -85,30 +85,16 @@ static class Native
         SCANCODE = 8,
     }
 
+    // https://kbdlayout.info/KBDFR/scancodes
     public enum SCANCODE_FR : ushort
     {
-        A = 16,
-        Z = 17,
-        E = 18,
-        R = 19,
-        T = 20,
-        Y = 21,
-        U = 22,
-        I = 23,
-        O = 24,
-        P = 25,
-        Q = 30,
-        S = 31,
-        D = 32,
-        F = 33,
-        G = 34,
-        H = 35,
-        J = 36,
-        K = 37,
-        L = 38,
-        M = 39,
-        W = 44,
-        X = 45,
+        ESCAPE = 1, N1, N2, N3, N4, N5, N6, N7, N8, N9, N0, CLOSED_BRACKET, EQUAL, BACK,
+        TAB, A, Z, E, R, T, Y, U, I, O, P, CIRCON, DOLLAR, RETURN, LCONTROL,
+        Q, S, D, F, G, H, J, K, L, M, PERCENT, POSTSCRIPT, LSHIFT, ASTERISK,
+        W, X, C, V, B, N, COMMA, SEMICOLON, COLON, EXCLAMATION, RSHIFT, PN_MULTIPLY, LMENU, SPACE, CAPITAL,
+        F1, F2, F3, F4, F5, F6, F7, F8, F9, F10,
+        NUMLOK, SCROLL, PN_HOME, PN_UP, PN_PRIOR, PN_SUBSTRACT, PN_LEFT, PN_CLEAR, PN_RIGHT, PN_ADD, PN_END,
+        PN_DOWN, PN_NEXT, PN_INSERT, PN_DELETE, SNAPSHOT, KEY55, LESSERTHAN, F11, F12 /*= 88*/
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -147,7 +133,7 @@ static class Native
     public static extern int SendInput(int nInputs, ref INPUT pInputs, int cbSize);
 
     [DllImport("User32.dll", SetLastError = true)]
-    public static extern int SendInput(int nInputs, [MarshalAs(UnmanagedType.LPArray, SizeConst = 1)]INPUT[] pInputs, int cbSize);
+    public static extern int SendInput(int nInputs, [MarshalAs(UnmanagedType.LPArray, SizeConst = 1)] INPUT[] pInputs, int cbSize);
 
     [DllImport("user32.dll")]
     public static extern IntPtr GetMessageExtraInfo();
