@@ -25,8 +25,8 @@ static class Native
 
         public POINT(int x, int y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         public static implicit operator System.Drawing.Point(POINT p)
@@ -48,7 +48,6 @@ static class Native
         public int Right;
         public int Bottom;
     }
-
 
     public enum INPUT_TYPE : int
     {
@@ -156,5 +155,4 @@ static class Native
     public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
     //SetWindowsHookEx
-
 }

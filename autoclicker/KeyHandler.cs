@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
-
-using HOTKEY_MOD = Native.HOTKEY_MOD;
 
 namespace autoclicker
 {
     public class KeyHandler
     {
-        private int key;
-        private IntPtr hWnd;
-        private int id;
+        private readonly int key;
+        private readonly IntPtr hWnd;
+        private readonly int id;
 
         public KeyHandler(Keys key, Form form)
         {
             this.key = (int)key;
-            this.hWnd = form.Handle;
-            id = this.GetHashCode();
+            hWnd = form.Handle;
+            id = GetHashCode();
         }
 
         public override int GetHashCode()

@@ -29,24 +29,24 @@ namespace autoclicker
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.btnStart = new System.Windows.Forms.Button();
+            this.ButtonStart = new System.Windows.Forms.Button();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.EffectTimer = new System.Windows.Forms.Timer(this.components);
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
-            // btnStart
+            // ButtonStart
             // 
-            this.btnStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnStart.Location = new System.Drawing.Point(78, 38);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(176, 30);
-            this.btnStart.TabIndex = 0;
-            this.btnStart.Text = "Start";
-            this.btnStart.UseVisualStyleBackColor = true;
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            this.ButtonStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.ButtonStart.Location = new System.Drawing.Point(78, 38);
+            this.ButtonStart.Name = "ButtonStart";
+            this.ButtonStart.Size = new System.Drawing.Size(176, 30);
+            this.ButtonStart.TabIndex = 0;
+            this.ButtonStart.Text = "Start";
+            this.ButtonStart.UseVisualStyleBackColor = true;
+            this.ButtonStart.Click += new System.EventHandler(this.ButtonStart_Click);
             // 
             // numericUpDown1
             // 
@@ -79,9 +79,9 @@ namespace autoclicker
             this.label1.TabIndex = 3;
             this.label1.Text = "milliseconds between inputs";
             // 
-            // timer1
+            // EffectTimer
             // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.EffectTimer.Tick += new System.EventHandler(this.EffectTimer_Tick);
             // 
             // comboBox1
             // 
@@ -102,7 +102,7 @@ namespace autoclicker
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.btnStart);
+            this.Controls.Add(this.ButtonStart);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "MainForm";
             this.Text = "SendInputs";
@@ -114,10 +114,10 @@ namespace autoclicker
 
         #endregion
 
-        private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.Button ButtonStart;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer EffectTimer;
         private System.Windows.Forms.ComboBox comboBox1;
     }
 }
