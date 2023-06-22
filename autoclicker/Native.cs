@@ -92,8 +92,20 @@ static class Native
         Q, S, D, F, G, H, J, K, L, M, PERCENT, POSTSCRIPT, LSHIFT, ASTERISK,
         W, X, C, V, B, N, COMMA, SEMICOLON, COLON, EXCLAMATION, RSHIFT, PN_MULTIPLY, LMENU, SPACE, CAPITAL,
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10,
-        NUMLOK, SCROLL, PN_HOME, PN_UP, PN_PRIOR, PN_SUBSTRACT, PN_LEFT, PN_CLEAR, PN_RIGHT, PN_ADD, PN_END,
-        PN_DOWN, PN_NEXT, PN_INSERT, PN_DELETE, SNAPSHOT, KEY55, LESSERTHAN, F11, F12 /*= 88*/
+        NUMLOK, SCROLL, PN_7_HOME, PN_8_UP, PN_9_PRIOR, PN_SUBSTRACT, PN_4_LEFT, PN_6_CLEAR, PN_7_RIGHT, PN_ADD, PN_1_END,
+        PN_2_DOWN, PN_3_NEXT, PN_0_INSERT, PN_DOT_DELETE, SNAPSHOT, KEY55, LESSERTHAN, F11, F12 /*= 88*/
+    }
+
+    // https://kbdlayout.info/kbdusx/scancodes
+    public enum SCANCODE_EN : ushort
+    {
+        ESCAPE = 1, N1, N2, N3, N4, N5, N6, N7, N8, N9, N0, MINUS, PLUS, BACK,
+        TAB, Q, W, E, R, T, Y, U, I, O, P, OEM_4, OEM_6, RETURN, LCONTROL,
+        A, S, D, F, G, H, J, K, L, OEM_1, OEM_7, OEM_3, LSHIFT, OEM_5,
+        Z, X, C, V, B, N, M, OEM_COMMA, OEM_PERIOD, OEM_2, RSHIFT, PN_MULTIPLY, LMENU, SPACE, CAPITAL,
+        F1, F2, F3, F4, F5, F6, F7, F8, F9, F10,
+        NUMLOK, SCROLL, PN_7_HOME, PN_8_UP, PN_9_PRIOR, PN_SUBSTRACT, PN_4_LEFT, PN_5_CLEAR, PN_6_RIGHT, PN_ADD, PN_1_END,
+        PN_2_DOWN, PN_3_NEXT, PN_0_INSERT, PN_DOT_DELETE, SNAPSHOT, KEY55, OEM_10, F11, F12 /*= 88*/
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -111,7 +123,7 @@ static class Native
     public struct KEYBDINPUT
     {
         public short wVK;           // 0
-        public SCANCODE_FR wScan;   // 2
+        public ushort wScan;        // 2
         public KEYEVENTF dwFlags;   // 4
         public uint time;           // 8
         public IntPtr dwExtraInfo;  // 12

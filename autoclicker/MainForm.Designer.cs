@@ -34,6 +34,7 @@ namespace autoclicker
             this.label1 = new System.Windows.Forms.Label();
             this.EffectTimer = new System.Windows.Forms.Timer(this.components);
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.keyPressed = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -94,18 +95,29 @@ namespace autoclicker
             this.comboBox1.Size = new System.Drawing.Size(57, 21);
             this.comboBox1.TabIndex = 4;
             // 
+            // keyPressed
+            // 
+            this.keyPressed.Enabled = false;
+            this.keyPressed.Location = new System.Drawing.Point(258, 12);
+            this.keyPressed.Name = "keyPressed";
+            this.keyPressed.Size = new System.Drawing.Size(100, 20);
+            this.keyPressed.TabIndex = 5;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(263, 80);
+            this.ClientSize = new System.Drawing.Size(396, 80);
+            this.Controls.Add(this.keyPressed);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.ButtonStart);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.KeyPreview = true;
             this.Name = "MainForm";
             this.Text = "SendInputs";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -119,6 +131,7 @@ namespace autoclicker
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Timer EffectTimer;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.TextBox keyPressed;
     }
 }
 

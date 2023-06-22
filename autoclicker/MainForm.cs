@@ -1,15 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using INPUT = Native.INPUT;
-using INPUT_TYPE = Native.INPUT_TYPE;
-using KEYBDINPUT = Native.KEYBDINPUT;
-using KEYEVENTF = Native.KEYEVENTF;
-using MOUSEEVENTF = Native.MOUSEEVENTF;
-using MOUSEINPUT = Native.MOUSEINPUT;
-using SCANCODE = Native.SCANCODE_FR;
+using static Native;
 
 namespace autoclicker
 {
@@ -17,16 +10,23 @@ namespace autoclicker
     {
         private readonly KeyHandler ghk;
         private IntPtr startWindow;
-        const string title = "SendInputs";
+        const string title = "Clix";
 
         public MainForm()
         {
             InitializeComponent();
-            Text = $"{ title } - { (Environment.Is64BitProcess ? "64bit" : "32bit") }";
+            UpdateFormTitleAndEnableComponents();
 
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
             System.Diagnostics.Debug.WriteLine($"{Marshal.SizeOf(typeof(INPUT)) } / {Marshal.SizeOf(typeof(KEYBDINPUT))} / {Marshal.SizeOf(typeof(MOUSEINPUT))}");
+        }
+
+        private void UpdateFormTitleAndEnableComponents()
+        {
+            Text = $"{ title } - { (Environment.Is64BitProcess ? "64bit" : "32bit") } - { (EffectTimer.Enabled ? $"running on \"{ GetWindowName(startWindow) }\"" : "stopped") } ";
+            ButtonStart.Text = EffectTimer.Enabled ? "Stop" : "Start";
+            numericUpDown1.Enabled = !EffectTimer.Enabled;
         }
 
         private IntPtr GetWindowUnderCursor()
@@ -55,54 +55,7 @@ namespace autoclicker
             ToggleEffectTimer();
         }
 
-        private void SendKey(IList<INPUT> inputs, SCANCODE scanCode)
-        {
-            {
-                var input = new INPUT
-                {
-                    type = INPUT_TYPE.KEYBOARD
-                };
-                input.ki.wVK = 0;
-                input.ki.wScan = scanCode;
-                input.ki.dwFlags = KEYEVENTF.SCANCODE;
-                input.ki.dwExtraInfo = IntPtr.Zero;
-                input.ki.time = 0;
-
-                inputs.Add(input);
-            }
-
-            {
-                var input = new INPUT
-                {
-                    type = INPUT_TYPE.KEYBOARD
-                };
-                input.ki.wVK = 0;
-                input.ki.wScan = scanCode;
-                input.ki.dwFlags = KEYEVENTF.KEYUP | KEYEVENTF.SCANCODE;
-                input.ki.dwExtraInfo = IntPtr.Zero;
-                input.ki.time = 0;
-
-                inputs.Add(input);
-            }
-        }
-
-        private void SendMouse(IList<INPUT> inputs, MOUSEEVENTF flags)
-        {
-            var input = new INPUT
-            {
-                type = INPUT_TYPE.MOUSE
-            };
-            input.mi.dx = 0;
-            input.mi.dy = 0;
-            input.mi.dwFlags = flags;
-            input.mi.dwExtraInfo = IntPtr.Zero;
-            input.mi.mouseData = 0;
-            input.mi.time = 0;
-
-            inputs.Add(input);
-        }
-
-        private bool clickOn = false;
+        private bool clickOn = true;
 
         MouseButtons previousMouseButtons = MouseButtons.None;
 
@@ -124,11 +77,11 @@ namespace autoclicker
                 return;
             }
 
-            List<INPUT> inputs = new List<INPUT>();
+            InputBuffer inputs = new InputBuffer();
 
-            SendKey(inputs, SCANCODE.L);
-            SendKey(inputs, SCANCODE.K);
-            SendKey(inputs, SCANCODE.M);
+            //inputs.SendKey((ushort)SCANCODE_FR.L);
+            //inputs.SendKey((ushort)SCANCODE_FR.K);
+            //inputs.SendKey((ushort)SCANCODE_FR.M);
 
             if (CheckMouseButtonJustPressed(MouseButtons.XButton2))
             {
@@ -137,13 +90,10 @@ namespace autoclicker
 
             if (clickOn | CheckMouseButtonDown(MouseButtons.XButton1))
             {
-                SendMouse(inputs, MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.LEFTUP | MOUSEEVENTF.RIGHTDOWN | MOUSEEVENTF.RIGHTUP | MOUSEEVENTF.MIDDLEDOWN | MOUSEEVENTF.MIDDLEUP);
+                inputs.SendMouse(MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.LEFTUP);
             }
 
-            if (Native.SendInput(inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT))) == 0)
-            {
-                System.Diagnostics.Debug.WriteLine($"SendInput failed with code: { Marshal.GetLastWin32Error() }");
-            }
+            inputs.Commit();
 
             previousMouseButtons = MouseButtons;
         }
@@ -161,18 +111,18 @@ namespace autoclicker
             {
                 EffectTimer.Start();
                 startWindow = GetWindowUnderCursor();
-                Text = $"{ title } - running... \"{ GetWindowName(startWindow) }\"";
-                ButtonStart.Text = "Stop";
-                numericUpDown1.Enabled = false;
-
             }
             else
             {
                 EffectTimer.Stop();
-                Text = $"{ title } - stopped";
-                ButtonStart.Text = "Start";
-                numericUpDown1.Enabled = true;
+                startWindow = IntPtr.Zero;
             }
+            UpdateFormTitleAndEnableComponents();
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            keyPressed.Text = $"{e.KeyCode}";
         }
     }
 }
