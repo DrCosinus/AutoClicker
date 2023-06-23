@@ -8,14 +8,41 @@ static class Native
     public static extern IntPtr WindowFromPoint(System.Drawing.Point Point);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    public static extern uint GetWindowModuleFileName(IntPtr hwnd,
-        StringBuilder lpszFileName, uint cchFileNameMax);
+    public static extern uint GetWindowModuleFileName(IntPtr hwnd, StringBuilder lpszFileName, uint cchFileNameMax);
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    [DllImport("user32.dll")]
     public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
     [DllImport("user32.dll")]
+    public static extern int GetWindowTextLength(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    public static extern bool IsWindowVisible(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetShellWindow();
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetWindowDC(IntPtr hwnd);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr ReleaseDC(IntPtr hwnd, IntPtr hdc);
+
+    [DllImport("user32.dll")]
     public static extern bool GetCursorPos(out POINT lpPoint);
+
+    public delegate bool EnumWindowsProc(IntPtr hwnd, int lParam);
+
+    // https://learn.microsoft.com/fr-fr/windows/win32/api/winuser/nf-winuser-enumwindows?redirectedfrom=MSDN
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern bool EnumWindows(EnumWindowsProc enumFunc, int extraData);
+
+    // only for anycpu ??
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern int GetWindowThreadProcessId(IntPtr handle, out uint processId);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct POINT
@@ -148,7 +175,6 @@ static class Native
 
     [DllImport("user32.dll")]
     public static extern IntPtr GetMessageExtraInfo();
-
 
     [Flags]
     public enum HOTKEY_MOD : int

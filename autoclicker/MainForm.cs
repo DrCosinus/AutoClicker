@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -10,7 +12,9 @@ namespace autoclicker
     {
         private readonly KeyHandler ghk;
         private IntPtr startWindow;
-        const string title = "Clix";
+        private const string title = "Clix";
+
+        private IntPtr targetWindow = IntPtr.Zero;
 
         public MainForm()
         {
@@ -20,6 +24,18 @@ namespace autoclicker
             ghk = new KeyHandler(Keys.F6, this);
             ghk.Register();
             System.Diagnostics.Debug.WriteLine($"{Marshal.SizeOf(typeof(INPUT)) } / {Marshal.SizeOf(typeof(KEYBDINPUT))} / {Marshal.SizeOf(typeof(MOUSEINPUT))}");
+
+            //EnumWindows((hwnd, lParam) => { return false; }, 0);
+
+            targetWindow = IntPtr.Zero;
+            foreach (Process process in Process.GetProcesses())
+            {
+                if (process.MainWindowHandle != IntPtr.Zero && process.ProcessName == "Cookie Clicker")
+                {
+                    targetWindow = process.MainWindowHandle;
+                    Trace.WriteLine($"{process.ProcessName} - FOUND - { (int)process.MainWindowHandle:X8}");
+                }
+            }
         }
 
         private void UpdateFormTitleAndEnableComponents()
@@ -71,6 +87,14 @@ namespace autoclicker
 
         private void EffectTimer_Tick(object sender, EventArgs e)
         {
+            if (targetWindow != IntPtr.Zero)
+            {
+                IntPtr hdc = GetWindowDC(targetWindow);
+                Graphics g = Graphics.FromHwnd(targetWindow);
+                Pen p = new Pen(Color.Red, 10);
+                g.DrawRectangle(p, 10, 10, 50, 50);
+                ReleaseDC(targetWindow, hdc);
+            }
             if (startWindow != GetWindowUnderCursor())
             {
                 ToggleEffectTimer();
